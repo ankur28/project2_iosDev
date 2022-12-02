@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     let locationManager = CLLocationManager()
 
+    @IBOutlet weak var addLocationButton: UIBarButtonItem!
     
     var latitude: Double = 0.0
     var longitude: Double = 0.0
@@ -29,8 +30,13 @@ class ViewController: UIViewController {
 
     }
     
-
+    @IBAction func onAddLocation(_ sender: Any) {
+        performSegue(withIdentifier: "goToAddLocation", sender: self)
+    }
+    
     private func setupMap(){
+        mapView.delegate = self
+        
         print(latitude, longitude)
         let location = CLLocation(latitude: latitude, longitude: longitude)
         let radiusInMeters: CLLocationDegrees = 1000
@@ -72,6 +78,32 @@ extension ViewController: CLLocationManagerDelegate {
     }
     
     
+}
+
+extension ViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let identifier = "myIdentifier"
+        var view: MKMarkerAnnotationView
+        
+        if let dequeuedview = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView{
+            dequeuedview.annotation = annotation
+            view = dequeuedview
+        } else {
+            
+            view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            view.canShowCallout = true
+            view.calloutOffset = CGPoint(x: 0, y:10)
+            
+            let button = UIButton(type: .detailDisclosure)
+            view.rightCalloutAccessoryView = button
+            
+            let image = UIImage(systemName: "graduationcap.circle.fill")
+            view.leftCalloutAccessoryView = UIImageView(image: image)
+            
+        }
+        return view
+
+    }
 }
 
 class MyAnnotation: NSObject, MKAnnotation {
