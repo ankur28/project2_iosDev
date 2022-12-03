@@ -85,7 +85,6 @@ class ViewController: UIViewController {
     func addAnnotaation(location: CLLocation, weatherInfo: Dictionary<String,String> ){
 
         let locationCoordinate = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-        print("location is: ",locationCoordinate)
         
         let subTitle = "\(weatherInfo["temp"]!), Feels like \(weatherInfo["feels_like"]!)"
 
@@ -165,11 +164,11 @@ extension ViewController: MKMapViewDelegate {
         let identifier = "myIdentifier"
         var view: MKMarkerAnnotationView
         
-//        if let dequeuedview = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView{
-//            dequeuedview.annotation = annotation
-//            view = dequeuedview
-//        } else {
-//
+        if let dequeuedview = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView{
+            dequeuedview.annotation = annotation
+            view = dequeuedview
+        } else {
+            
             view = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
             view.canShowCallout = true
             view.calloutOffset = CGPoint(x: 0, y:10)
@@ -204,11 +203,12 @@ extension ViewController: MKMapViewDelegate {
                 view.markerTintColor = UIColor.systemPurple
                 view.tintColor = UIColor.systemPurple
             }
-            
-            if let myAnnotation = annotation as? MyAnnotation {
-                view.glyphText = myAnnotation.glyphText
-            }
+        }
         
+        if let myAnnotation = annotation as? MyAnnotation {
+            view.glyphText = myAnnotation.glyphText
+        }
+
         return view
 
     }

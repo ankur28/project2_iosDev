@@ -22,6 +22,8 @@ class DetailsViewController: UIViewController {
     
     var locationName: String?
     
+    var weatherImage: UIImage!
+    
     var forecastArr: [ForecastStruct] = []
     
     override func viewDidLoad() {
@@ -29,6 +31,7 @@ class DetailsViewController: UIViewController {
         loadWeather(search: locationName!)
 
         forecastListView.dataSource = self
+        forecastListView.delegate = self
 
 //        locationLabel.text = locationName
 //        temp_label.text = "\(curr_temp!)C"
@@ -73,22 +76,71 @@ class DetailsViewController: UIViewController {
                 //    print(weatherResponse.forecast.forecastday)
 
                     self.locationLabel.text = weatherResponse.location.name
-                    self.temp_label.text = String(weatherResponse.current.temp_c)
+                    self.temp_label.text = "\(weatherResponse.current.temp_c)C"
                     self.weatherCondition_label.text = weatherResponse.current.condition.text
-                    self.highTemp_label.text = String(weatherResponse.forecast.forecastday[0].day.maxtemp_c)
-                    self.lowTemp_label.text = String(weatherResponse.forecast.forecastday[0].day.mintemp_c)
-               
+                    self.highTemp_label.text = "\(weatherResponse.forecast.forecastday[0].day.maxtemp_c)C"
+                    self.lowTemp_label.text = "\(weatherResponse.forecast.forecastday[0].day.mintemp_c)C"
+                    
                     for value in weatherResponse.forecast.forecastday {
-                        let date = value.date
+                        let date = self.getDayOfWeekString(today: value.date)
                         let maxTemp = value.day.maxtemp_c
                         let minTemp = value.day.mintemp_c
                         let condition = value.day.condition.text
                         
+                        let code = value.day.condition.code
+                        switch code {
+                        case 1000 :
+                            
+                            self.weatherImage = UIImage(systemName: "sun.max.fill")
+                        case 1003 :
+                            self.weatherImage = UIImage(systemName: "cloud.sun")
                         
-                        self.forecastArr.append(ForecastStruct(date: date, maxtemp_c: maxTemp, mintemp_c: minTemp, condition: condition))
+                        case 1006 :
+                            self.weatherImage = UIImage(systemName: "cloud")
+                            
+                        case 1009 :
+                            self.weatherImage = UIImage(systemName: "cloud.fill")
+
+                        case 1030 :
+                            self.weatherImage = UIImage(systemName: "cloud.drizzle")
+
+                        case 1066 :
+                            
+                            self.weatherImage = UIImage(systemName: "cloud.snow")
+                            
+                        case 1114 :
+                            self.weatherImage = UIImage(systemName: "wind.snow")
+                            
+                        case 1117 :
+                        
+                            self.weatherImage = UIImage(systemName: "wind.snow.circle")
+                       
+                        case 1183 :
+                         
+                            self.weatherImage = UIImage(systemName: "cloud.sun.rain")
+                            
+                        case 1195 :
+                         
+                            self.weatherImage = UIImage(systemName: "cloud.bolt.rain.fill")
+                            
+                        case 1213 :
+                            self.weatherImage = UIImage(systemName: "snowflake")
+                            
+                        case 1204 :
+                        
+                            self.weatherImage = UIImage(systemName: "cloud.sleet")
+                            
+                        case 1135 :
+                        
+                            self.weatherImage = UIImage(systemName: "cloud.fog.fill")
+                        default:
+                            self.weatherImage = UIImage(systemName: "sun.min")
+                        }
+                        
+                        self.forecastArr.append(ForecastStruct(date: date!,currentTemp: String(weatherResponse.current.temp_c), maxtemp_c: maxTemp, mintemp_c: minTemp, condition: condition,weatherIcon: self.weatherImage))
                     }
                     
-                    print(self.forecastArr)
+                    self.forecastListView.reloadData()
                     
                 }
 
@@ -100,11 +152,42 @@ class DetailsViewController: UIViewController {
         forecastListView.reloadData()
     }
     
+    func getDayOfWeekString(today:String)->String? {
+        let formatter  = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        if let todayDate = formatter.date(from: today) {
+            let myCalendar = NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!
+            let myComponents = myCalendar.components(.weekday, from: todayDate)
+            let weekDay = myComponents.weekday
+            switch weekDay {
+            case 1:
+                return "Sunday"
+            case 2:
+                return "Monday"
+            case 3:
+                return "Tuesday"
+            case 4:
+                return "Wednesday"
+            case 5:
+                return "Thursday"
+            case 6:
+                return "Friday"
+            case 7:
+                return "Saturday"
+            default:
+                print("Error fetching days")
+                return "Day"
+            }
+        } else {
+            return nil
+        }
+    }
+    
     private func getUrl(searchParam: String) -> URL? {
         let baseURL = "https://api.weatherapi.com/v1/"
         let currentEndpoint = "forecast.json"
         let apiKey = "e038f8bb336c42b485d220603222211"
-        guard let url =  "\(baseURL)\(currentEndpoint)?key=\(apiKey)&q=\(searchParam)&days=7&aqi=no&alerts=no"
+        guard let url =  "\(baseURL)\(currentEndpoint)?key=\(apiKey)&q=\(searchParam)&days=10&aqi=no&alerts=no"
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             return nil
         }
@@ -168,9 +251,11 @@ struct Day: Decodable {
 
 struct ForecastStruct {
     let date: String
+    let currentTemp: String
     let maxtemp_c: Float
     let mintemp_c: Float
     let condition: String
+    let weatherIcon: UIImage
 }
 
 
@@ -182,8 +267,9 @@ extension DetailsViewController: UITableViewDataSource {
         let forecast = forecastArr[indexPath.row]
         var content = cell.defaultContentConfiguration()
         content.text = forecast.date
-      //  content.secondaryText = location.temp
-        
+        content.secondaryText = "H:\(forecast.maxtemp_c)C, L:\(forecast.mintemp_c)C"
+        content.image = forecast.weatherIcon
+        content.prefersSideBySideTextAndSecondaryText = true
         cell.contentConfiguration = content
         return cell
     }
@@ -192,3 +278,11 @@ extension DetailsViewController: UITableViewDataSource {
         forecastArr.count
     }
 }
+extension DetailsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+                
+    }
+}
+
