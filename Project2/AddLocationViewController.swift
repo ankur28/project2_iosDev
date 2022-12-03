@@ -9,7 +9,7 @@ import CoreLocation
 
 protocol UpdateLocationsDelegate {
     func UpdateLocations(locations: locationStruct)
-    func weatherInfo(weatherData: Dictionary<String,String>,locationData: Dictionary<String,Double>)
+    func weatherInfo(weatherData: Dictionary<String,String>,locationData: Dictionary<String,Double>, image: UIImageView)
 }
 
 class AddLocationViewController: UIViewController, UITextFieldDelegate {
@@ -28,7 +28,6 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var cancelBtn: UIButton!
     @IBOutlet weak var saveBtn: UIButton!
     
-    @IBOutlet weak var converTo: UIButton!
     @IBOutlet weak var degreeLabel: UILabel!
     
     let config = UIImage.SymbolConfiguration(paletteColors:
@@ -46,15 +45,13 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
     let vc:ViewController = ViewController()
     var locations: [locationStruct] = []
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         displayWeatherImage()
         searchTextField.delegate = self
         
-
-        degreeLabel.textColor = UIColor.systemTeal
-        print("location:",locations)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -69,35 +66,12 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
 
     }
 
-
-    @IBAction func converToAction(_ sender: Any) {
-        
-        print(tempCelsius)
-        if(tempLabel.text == "Temp"){
-            let alert = UIAlertController(title: "Warning", message: "Please search a city name or click on current location button to get the temperature", preferredStyle: .alert)
-            
-            let okAction  = UIAlertAction(title: "Ok", style: .default)
-            alert.addAction(okAction)
-            self.present(alert, animated: true, completion: nil)
-        }else{
-            if tempLabel.text!.contains("C") {
-                tempLabel.text = "\(tempFahr)°F"
-                degreeLabel.text = "°C"
-            }else{
-                tempLabel.text = "\(tempCelsius)°C"
-                degreeLabel.text = "°F"
-
-            }
-        }
-        
-       
-    }
     
     @IBAction func onSave(_ sender: Any) {
 
         if let delegate = delegate{
-            delegate.UpdateLocations(locations: locationStruct(title: weatherData["name"]!, temp: "\(weatherData["temp"]!)C"))
-            delegate.weatherInfo(weatherData: weatherData, locationData: locationData)
+            delegate.UpdateLocations(locations: locationStruct(title: weatherData["name"]!, temp: "\(weatherData["temp"]!)C",lat: locationData["lat"]!, lon: locationData["lon"]!))
+            delegate.weatherInfo(weatherData: weatherData, locationData: locationData, image: weatherImage)
         }
         dismiss(animated: true)
 
@@ -164,6 +138,11 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
                     self.longitude = weatherResponse.location.lon
 
                     
+                  print(weatherResponse.forecast.forecastday[0].day.maxtemp_c)
+                    self.weatherData["high"] = String(weatherResponse.forecast.forecastday[0].day.maxtemp_c)
+                    self.weatherData["low"] = String(weatherResponse.forecast.forecastday[0].day.mintemp_c)
+                    
+                    print(weatherResponse.forecast.forecastday)
                     let config = UIImage.SymbolConfiguration(paletteColors:
                     [.systemTeal, .systemYellow])
                     
@@ -247,9 +226,9 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
     
     private func getUrl(searchParam: String) -> URL? {
         let baseURL = "https://api.weatherapi.com/v1/"
-        let currentEndpoint = "current.json"
+        let currentEndpoint = "forecast.json"
         let apiKey = "e038f8bb336c42b485d220603222211"
-        guard let url =  "\(baseURL)\(currentEndpoint)?key=\(apiKey)&q=\(searchParam)"
+        guard let url =  "\(baseURL)\(currentEndpoint)?key=\(apiKey)&q=\(searchParam)&days=7&aqi=no&alerts=no"
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             return nil
         }
@@ -275,6 +254,7 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
 struct WeatherResponse: Decodable {
     let location: Location
     let current: Weather
+    let forecast: ForecastData
 }
 
 struct Location: Decodable {
@@ -296,6 +276,19 @@ struct WeatherCondition: Decodable {
     let code: Int
 }
 
+struct ForecastData: Decodable {
+    let forecastday: [ForecastDay]
 }
+
+struct ForecastDay: Decodable {
+    let date: String
+    let day: Day
+}
+struct Day: Decodable {
+    let maxtemp_c: Float
+    let mintemp_c: Float
+    let condition: WeatherCondition
+}
+    }
 
 

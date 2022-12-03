@@ -14,6 +14,7 @@
 		3902358A2931C522001FB2ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 390235892931C522001FB2ED /* Assets.xcassets */; };
 		3902358D2931C522001FB2ED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3902358B2931C522001FB2ED /* LaunchScreen.storyboard */; };
 		390235952939C087001FB2ED /* AddLocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390235942939C087001FB2ED /* AddLocationViewController.swift */; };
+		39E4DE48293AFB200010E711 /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E4DE47293AFB200010E711 /* DetailsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		3902358C2931C522001FB2ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3902358E2931C522001FB2ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		390235942939C087001FB2ED /* AddLocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationViewController.swift; sourceTree = "<group>"; };
+		39E4DE47293AFB200010E711 /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				390235822931C522001FB2ED /* SceneDelegate.swift */,
 				390235842931C522001FB2ED /* ViewController.swift */,
 				390235862931C522001FB2ED /* Main.storyboard */,
+				39E4DE47293AFB200010E711 /* DetailsViewController.swift */,
 				390235892931C522001FB2ED /* Assets.xcassets */,
 				3902358B2931C522001FB2ED /* LaunchScreen.storyboard */,
 				3902358E2931C522001FB2ED /* Info.plist */,
@@ -145,6 +148,7 @@
 				390235812931C522001FB2ED /* AppDelegate.swift in Sources */,
 				390235832931C522001FB2ED /* SceneDelegate.swift in Sources */,
 				390235952939C087001FB2ED /* AddLocationViewController.swift in Sources */,
+				39E4DE48293AFB200010E711 /* DetailsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
