@@ -38,7 +38,7 @@
                                 </items>
                             </toolbar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="hLd-Xf-jGD">
-                                <rect key="frame" x="0.0" y="508" width="391" height="282"/>
+                                <rect key="frame" x="0.0" y="500" width="391" height="290"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
@@ -52,18 +52,29 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pCU-6e-L4n">
+                                <rect key="frame" x="341" y="457" width="50" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="location.circle" catalog="system" title=""/>
+                                <connections>
+                                    <action selector="onMyLocation:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cx7-k7-3vD"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="oLh-ME-DxX" firstAttribute="top" secondItem="pCU-6e-L4n" secondAttribute="bottom" constant="-492" id="FPd-Vl-ka1"/>
                             <constraint firstItem="oLh-ME-DxX" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="ULm-lF-Kxb"/>
                             <constraint firstItem="oLh-ME-DxX" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="fGZ-50-uam"/>
                             <constraint firstItem="oLh-ME-DxX" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="js7-t8-Xtt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="pCU-6e-L4n" secondAttribute="trailing" constant="2" id="knl-oO-4q5"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="addLocationButton" destination="jBW-oy-2JL" id="7H5-vw-5ys"/>
                         <outlet property="mapView" destination="oLh-ME-DxX" id="6kj-vv-UuZ"/>
+                        <outlet property="mylocationButton" destination="pCU-6e-L4n" id="QBN-nI-CEJ"/>
                         <outlet property="tableView" destination="hLd-Xf-jGD" id="xEo-dN-d1j"/>
                         <segue destination="KTp-fy-ZT6" kind="show" identifier="goToAddLocation" id="57N-9V-l7B"/>
                         <segue destination="NXR-rj-3K5" kind="show" identifier="goToDetails" id="fcN-D0-qnT"/>
@@ -335,6 +346,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="location.circle" catalog="system" width="128" height="123"/>
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

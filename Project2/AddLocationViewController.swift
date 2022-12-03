@@ -289,6 +289,6 @@ struct Day: Decodable {
     let mintemp_c: Float
     let condition: WeatherCondition
 }
-    }
+}
 
 
