@@ -26,7 +26,7 @@
                                 <standardMapConfiguration key="preferredConfiguration"/>
                             </mapView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mbP-DS-FQ3">
-                                <rect key="frame" x="0.0" y="774" width="392" height="43"/>
+                                <rect key="frame" x="-1" y="790" width="392" height="43"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
                                     <barButtonItem width="279" style="plain" systemItem="fixedSpace" id="v8k-eI-COi"/>
@@ -37,6 +37,21 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="hLd-Xf-jGD">
+                                <rect key="frame" x="0.0" y="508" width="391" height="282"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="locationList" id="DOZ-zz-zjI">
+                                        <rect key="frame" x="0.0" y="50" width="391" height="43.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DOZ-zz-zjI" id="Tzr-P4-KaC">
+                                            <rect key="frame" x="0.0" y="0.0" width="391" height="43.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -49,6 +64,7 @@
                     <connections>
                         <outlet property="addLocationButton" destination="jBW-oy-2JL" id="7H5-vw-5ys"/>
                         <outlet property="mapView" destination="oLh-ME-DxX" id="6kj-vv-UuZ"/>
+                        <outlet property="tableView" destination="hLd-Xf-jGD" id="xEo-dN-d1j"/>
                         <segue destination="KTp-fy-ZT6" kind="show" identifier="goToAddLocation" id="57N-9V-l7B"/>
                     </connections>
                 </viewController>
@@ -131,20 +147,8 @@
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="rNM-s4-fxV">
                                 <rect key="frame" x="16" y="69" width="361" height="40"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ba7-9D-SBl">
-                                        <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="40" id="8vF-vi-qjP"/>
-                                            <constraint firstAttribute="width" constant="40" id="bHe-E4-K6i"/>
-                                        </constraints>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" image="location.circle" catalog="system" title=""/>
-                                        <connections>
-                                            <action selector="onLocationTapped:" destination="KTp-fy-ZT6" eventType="touchUpInside" id="zxz-0l-EWf"/>
-                                        </connections>
-                                    </button>
                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter a location" textAlignment="right" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="D0n-p8-VKD">
-                                        <rect key="frame" x="50" y="0.0" width="261" height="40"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="311" height="40"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" returnKeyType="search"/>
                                     </textField>
@@ -162,6 +166,35 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h2L-9E-amu">
+                                <rect key="frame" x="0.0" y="715" width="392" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <items>
+                                    <barButtonItem style="plain" id="B7k-aR-Skd">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Lzb-nt-LtE">
+                                            <rect key="frame" x="16" y="4.6666666666666679" width="179" height="35"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="plain" title="Cancel"/>
+                                            <connections>
+                                                <action selector="onCancel:" destination="KTp-fy-ZT6" eventType="touchUpInside" id="2sA-Gv-5Fm"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="fixedSpace" id="juq-ET-8WR"/>
+                                    <barButtonItem style="plain" id="tdE-RK-dYH">
+                                        <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Hep-kd-sd7">
+                                            <rect key="frame" x="195" y="4" width="181" height="36"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" title="Button"/>
+                                            <buttonConfiguration key="configuration" style="filled" title="Save"/>
+                                            <connections>
+                                                <action selector="onSave:" destination="KTp-fy-ZT6" eventType="touchUpInside" id="NkJ-Lb-ydZ"/>
+                                            </connections>
+                                        </button>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="L3x-Do-wYo"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -176,12 +209,14 @@
                     </view>
                     <navigationItem key="navigationItem" id="0A4-ON-FpJ"/>
                     <connections>
+                        <outlet property="cancelBtn" destination="Lzb-nt-LtE" id="jEq-ET-4no"/>
                         <outlet property="conditionLabel" destination="7ei-dU-Inh" id="xPP-d5-NuT"/>
                         <outlet property="converTo" destination="Ifp-G6-URq" id="apT-p7-lzm"/>
                         <outlet property="degreeLabel" destination="Aey-tG-vjK" id="ZJ6-WF-TMi"/>
                         <outlet property="locationLabel" destination="V2W-aa-1GP" id="cfL-7J-fs5"/>
+                        <outlet property="saveBtn" destination="Hep-kd-sd7" id="EhR-SD-Ffo"/>
                         <outlet property="searchTextField" destination="D0n-p8-VKD" id="tq5-o8-pgZ"/>
-                        <outlet property="tempLabel" destination="8bh-NT-YRL" id="Fj3-tQ-cDq"/>
+                        <outlet property="tempLabel" destination="8bh-NT-YRL" id="SCx-tI-zD3"/>
                         <outlet property="weatherImage" destination="6Hl-Fa-iKh" id="81W-Qq-QcS"/>
                     </connections>
                 </viewController>
@@ -192,7 +227,6 @@
     </scenes>
     <resources>
         <image name="arrow.left.arrow.right" catalog="system" width="120" height="128"/>
-        <image name="location.circle" catalog="system" width="128" height="123"/>
         <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

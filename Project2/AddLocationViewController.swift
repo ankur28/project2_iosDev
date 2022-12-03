@@ -7,8 +7,14 @@
 import UIKit
 import CoreLocation
 
+protocol UpdateLocationsDelegate {
+    func UpdateLocations(locations: locationStruct)
+    func weatherInfo(weatherData: Dictionary<String,String>,locationData: Dictionary<String,Double>)
+}
+
 class AddLocationViewController: UIViewController, UITextFieldDelegate {
 
+    var delegate : UpdateLocationsDelegate?
     @IBOutlet weak var searchTextField: UITextField!
     
     @IBOutlet weak var weatherImage: UIImageView!
@@ -19,18 +25,26 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var conditionLabel: UILabel!
     
+    @IBOutlet weak var cancelBtn: UIButton!
+    @IBOutlet weak var saveBtn: UIButton!
+    
     @IBOutlet weak var converTo: UIButton!
     @IBOutlet weak var degreeLabel: UILabel!
     
-    let locationManager = CLLocationManager()
     let config = UIImage.SymbolConfiguration(paletteColors:
                                                 [.systemYellow, .systemTeal])
     
-    var latitude: String = ""
-    var longitude: String = ""
-    
+    var latitude: Double?
+    var longitude: Double?
+
     var tempCelsius: String = ""
     var tempFahr: String = ""
+    
+    var weatherData = [String:String]()
+    var locationData = [String:Double]()
+
+    let vc:ViewController = ViewController()
+    var locations: [locationStruct] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,10 +52,9 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
         displayWeatherImage()
         searchTextField.delegate = self
         
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.delegate = self
-        
+
         degreeLabel.textColor = UIColor.systemTeal
+        print("location:",locations)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -59,6 +72,7 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
 
     @IBAction func converToAction(_ sender: Any) {
         
+        print(tempCelsius)
         if(tempLabel.text == "Temp"){
             let alert = UIAlertController(title: "Warning", message: "Please search a city name or click on current location button to get the temperature", preferredStyle: .alert)
             
@@ -79,17 +93,27 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
        
     }
     
+    @IBAction func onSave(_ sender: Any) {
+
+        if let delegate = delegate{
+            delegate.UpdateLocations(locations: locationStruct(title: weatherData["name"]!, temp: "\(weatherData["temp"]!)C"))
+            delegate.weatherInfo(weatherData: weatherData, locationData: locationData)
+        }
+        dismiss(animated: true)
+
+    }
+    
+    @IBAction func onCancel(_ sender: Any) {
+        dismiss(animated: true)
+    }
+    
+    
     @IBAction func onSearch(_ sender: Any) {
         loadWeather(search: searchTextField.text)
         searchTextField.text = ""
+                
     }
-    
-    @IBAction func onLocationTapped(_ sender: Any) {
-        locationManager.requestLocation()
-        loadWeather(search: "\(latitude), \(longitude)")
-    }
-    
-    private func loadWeather(search: String?){
+    func loadWeather(search: String?){
         guard let search = search else {
             return
         }
@@ -122,33 +146,26 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
                 self.tempFahr = String(weatherResponse.current.temp_f)
                 
                 DispatchQueue.main.async {
-                    self.locationLabel.text = weatherResponse.location.name
                     self.tempLabel.text = "\(weatherResponse.current.temp_c)°C"
                     self.conditionLabel.text = weatherResponse.current.condition.text
-                    
+                    self.locationLabel.text = weatherResponse.location.name
+
                     let code = weatherResponse.current.condition.code
+                    self.weatherData["temp"] = String((weatherResponse.current.temp_c))
+                    self.weatherData["weather_condition"] = weatherResponse.current.condition.text
+                    self.weatherData["name"] = weatherResponse.location.name
+                    self.weatherData["feels_like"] = String(weatherResponse.current.feelslike_c)
+                    self.weatherData["code"] = String(code)
+                    self.locationData["lat"] = weatherResponse.location.lat
+                    self.locationData["lon"] = weatherResponse.location.lon
+                    
+                    
+                    self.latitude = weatherResponse.location.lat
+                    self.longitude = weatherResponse.location.lon
+
                     
                     let config = UIImage.SymbolConfiguration(paletteColors:
                     [.systemTeal, .systemYellow])
-                    
-                    //change background according to time of day
-                    if weatherResponse.current.is_day == 1{
-                        self.view.backgroundColor = UIColor.white
-                        self.searchTextField.backgroundColor = UIColor.white
-                        self.searchTextField.textColor = UIColor.black
-
-
-                    }else{
-                        self.view.backgroundColor = UIColor.black
-                        self.locationLabel.textColor = UIColor.systemTeal
-                        self.tempLabel.textColor = UIColor.systemTeal
-                        self.degreeLabel.textColor = UIColor.systemTeal
-                        self.conditionLabel.textColor = UIColor.systemTeal
-                        self.searchTextField.backgroundColor = UIColor.black
-                        self.searchTextField.textColor = UIColor.white
-                        
-                        
-                    }
                     
                     switch code {
                     case 1000 :
@@ -217,12 +234,14 @@ class AddLocationViewController: UIViewController, UITextFieldDelegate {
                         self.weatherImage.preferredSymbolConfiguration = config
                         self.weatherImage.image = UIImage(systemName: "sun.min")
                     }
-
+                    print("lats and longs from api : ",weatherResponse.location.lat,weatherResponse.location.lon)
+                    
                 }
+
             }
             
         }
-        
+ 
         dataTask.resume()
     }
     
@@ -260,6 +279,8 @@ struct WeatherResponse: Decodable {
 
 struct Location: Decodable {
     let name: String
+    let lat: Double
+    let lon: Double
 }
 
 struct Weather : Decodable{
@@ -267,6 +288,7 @@ struct Weather : Decodable{
     let temp_f: Float
     let is_day: Int
     let condition: WeatherCondition
+    let feelslike_c: Float
 }
 
 struct WeatherCondition: Decodable {
@@ -276,19 +298,4 @@ struct WeatherCondition: Decodable {
 
 }
 
-extension AddLocationViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("Got the location")
-        if let location = locations.last {
-             latitude = String(location.coordinate.latitude)
-             longitude = String(location.coordinate.longitude)
-            print("\(latitude), \(longitude)")
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error)
-    }
-    
-}
 
